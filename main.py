@@ -1,87 +1,26 @@
 import discord
 from discord.ext import commands
+from datetime import datetime
 
 from local import discord_token
+from cogs.roles import Roles
+
 
 bot_client = commands.Bot(command_prefix='?')
 
-@bot_client.command()
-async def mute(ctx, member: discord.Member, reason="None given"):
-    muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
+@bot_client.event
+async def on_ready():
+    print(f"Bot started at {datetime.now()}")
 
-    if not muted_role:
-        muted_role = await ctx.guild.create_role(name="Muted")
+@bot_client.event
+async def on_message(msg):
 
-        for channel in ctx.guild.channels:
-            await channel.set_permissions(muted_role, speak=False, send_messages=False, add_reactions=False)
+    # This is a test to see if you read through your PRs Doggo
+    if ("Osani" in msg.content):
+        print("All hail Osani")
 
-    await member.add_roles(muted_role, reason=reason)
-    await member.send(f"You have been muted in {ctx.guild.name} for {reason}.")
-    await ctx.send(f"{member.name} has been muted.")
-    
+    await bot_client.process_commands(msg)
 
-@bot_client.command()
-async def unmute(ctx, member: discord.Member):
-    muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
-
-    await member.remove_roles(muted_role)
-    await member.send(f"You have been unmuted in {ctx.guild.name}.")
-    await ctx.send(f"{member.name} has been unmuted.")
-
-@bot_client.command()
-async def get_role(ctx, name):
-    role = discord.utils.get(ctx.guild.roles, name=name)
-
-    if not role:
-        await ctx.send(f"{name} is not a role.")
-        return
-
-    await ctx.author.add_roles(role)
-    await ctx.author.send(f"You have been given the {role.name} role in {ctx.guild.name}.")
-    await ctx.send(f"{ctx.author.name} has been given the role {role.name}.")
-
-@bot_client.command()
-async def remove_role(ctx, name):
-    role = discord.utils.get(ctx.guild.roles, name=name)
-
-    if not role:
-        await ctx.send(f"{name} is not a role.")
-        return
-        
-    await ctx.author.remove_roles(role)
-    await ctx.author.send(f"The role {role.name} has been removed in {ctx.guild.name}.")
-    await ctx.send(f"The role {role.name} has been removed from {ctx.author.name}.")
-
-@bot_client.command()
-async def give_role(ctx, member: discord.Member, name):
-    if (not ctx.author.guild_permissions.administrator):
-        await ctx.send(f"You must be an admin to use this command.")
-        return
-
-    role = discord.utils.get(ctx.guild.roles, name=name)
-
-    if not role:
-        await ctx.send(f"{name} is not a role.")
-        return
-
-    await member.add_roles(role)
-    await member.send(f"You have been given the role {role.name} in {ctx.guild.name}.")
-    await ctx.send(f"The role {role.name} has been given to {member.name}.")
-
-@bot_client.command()
-async def take_role(ctx, member: discord.Member, name):
-    if (not ctx.author.guild_permissions.administrator):
-        await ctx.send(f"You must be an admin to use this command.")
-        return
-
-    role = discord.utils.get(ctx.guild.roles, name=name)
-
-    if not role:
-        await ctx.send(f"{name} is not a role.")
-        return
-
-    await member.remove_roles(role)
-    await member.send(f"The role {role.name} has been taken in {ctx.guild.name}.")
-    await ctx.send(f"The role {role.name} has been taken from {member.name}.")
+bot_client.add_cog(Roles(bot_client))
 
 bot_client.run(discord_token)
