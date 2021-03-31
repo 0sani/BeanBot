@@ -1,4 +1,4 @@
-from exceptions import TimeError
+from exceptionslib import TimeError
 
 class Time:
     def __init__(self, time):

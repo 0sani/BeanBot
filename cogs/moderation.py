@@ -3,19 +3,19 @@ from discord.ext import commands
 
 import asyncio
 
-from lib.time import Time
-from lib.exceptions import TimeError
+from timelib import Time
+from exceptionslib import TimeError, RoleNotFoundError
 
 class Moderation(commands.Cog):
     def __init__(self, bot_client):
         self.bot_client = bot_client
+
 
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def mute(self, ctx, member: discord.Member, reason="No reason given", muted_role_name="Muted"):
         muted_role = discord.utils.get(ctx.guild.roles, name=muted_role_name)
     
-        ## Creates muted role if it doesn't exist
         if not muted_role:
             muted_role = await ctx.guild.create_role(name="Muted")
             for channel in ctx.guild.channels:
@@ -31,7 +31,6 @@ class Moderation(commands.Cog):
     async def temp_mute(self, ctx, member: discord.Member, time: Time, reason="No reason given", muted_role_name="Muted"):
         muted_role = discord.utils.get(ctx.guild.roles, name=muted_role_name)
     
-        ## Creates muted role if it doesn't exist
         if not muted_role:
             muted_role = await ctx.guild.create_role(name="Muted")
             for channel in ctx.guild.channels:
@@ -52,8 +51,7 @@ class Moderation(commands.Cog):
     
         ## Checks if overloaded muted role inputted wrong
         if not muted_role:
-            await ctx.send(f"Muted role {muted_role_name} does not exist.")
-            return
+            raise RoleNotFoundError(f"Muted role {muted_role_name} not found.")
     
         await member.remove_roles(muted_role)
         await member.send(f"You have been unmuted in {ctx.guild.name}.")
@@ -95,6 +93,8 @@ class Moderation(commands.Cog):
             await ctx.send(f"Missing required arguments for command {ctx.command.name}.", delete_after=10) 
         if isinstance(error, TimeError):
             await ctx.send(f"Time input formatted incorrectly.", delete_after=10)
+        if isinstance(error, RoleNotFoundError):
+            await ctx.send(error.message)
 
 
 def setup(bot_client):
