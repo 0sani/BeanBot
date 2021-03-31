@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands 
 
-from exceptionslib import RoleNotFoundError, RoleTooHighInHierarchyError
+from .exceptionslib import RoleNotFoundError, RoleTooHighInHierarchyError
 
 class Roles(commands.Cog):
     def __init__(self, bot_client):
@@ -62,7 +62,6 @@ class Roles(commands.Cog):
         await ctx.send(f"The role {role.name} has been taken from {member.name}.")
 
 
-    @commands.Cog.listener()
     async def cog_command_error(self, ctx, error):
         if isinstance(error, RoleNotFoundError):
             await ctx.send(error.message)
