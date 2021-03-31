@@ -40,6 +40,27 @@ async def unmute(ctx, member: discord.Member, muted_role_name="Muted"):
 
 
 @bot_client.command()
+async def police_mute(ctx, member: discord.Member, reason, muted_role_name):
+    muted_role = discord.utils.get(ctx.guild.roles, name=muted_role_name)
+
+    ## Checks if muted role exists
+    if not muted_role:
+        await ctx.send(f"Muted role {muted_role_name} does not exist.")
+        return
+
+    ## Checks if there are any similar roles between the allowed roles for the muted role and the authors roles
+    with open("Info/ServerInfo.json", "r") as json_file:
+        json_dict = json.load(json_file)
+        if not any(i in ctx.author.roles for i in json_dict["police_mutes"][muted_role.name]):
+            await ctx.send(f"You do not have permissions to give people the role {muted_role.name}")
+            return
+
+    await member.add_roles(muted_role, reason=reason)
+    await member.send(f"You have been muted in {ctx.guild.name} for {reason}.")
+    await ctx.send(f"{member.name} has been muted.")
+
+
+@bot_client.command()
 @commands.has_permissions(administrator=True)
 async def kick(ctx, member: discord.Member, reason="No reason given"):
     await member.kick(reason=reason)
@@ -49,7 +70,7 @@ async def kick(ctx, member: discord.Member, reason="No reason given"):
 
 @bot_client.command()
 async def get_role(ctx, name):
-    role = discord.utils.get(ctx.guild.roles, name=name.title())
+    role = discord.utils.get(ctx.guild.roles, name=name)
 
     ## Checks if role exists
     if not role:
@@ -59,7 +80,7 @@ async def get_role(ctx, name):
     ## Checks if role is too high in role hierarchy
     try:
         with open("Info/ServerInfo.json", "r") as json_file:
-            ctx.guild.roles.index(role, ctx.guild.roles.index(discord.utils.get(ctx.guild.roles, name=json.dump(json_file)["highest_get_role"])))
+            ctx.guild.roles.index(role, 0, ctx.guild.roles.index(discord.utils.get(ctx.guild.roles, name=json.load(json_file)["highest_get_role"])))
     except ValueError:
         await ctx.send(f"Unable to get role {role.name}, too high in role hierarchy.")
         return
@@ -70,7 +91,7 @@ async def get_role(ctx, name):
 
 @bot_client.command()
 async def remove_role(ctx, name):
-    role = discord.utils.get(ctx.guild.roles, name=name.title())
+    role = discord.utils.get(ctx.guild.roles, name=name)
 
     # Checks if role exists
     if not role:
@@ -85,7 +106,7 @@ async def remove_role(ctx, name):
 @bot_client.command()
 @commands.has_permissions(administrator=True)
 async def give_role(ctx, member: discord.Member, name):
-    role = discord.utils.get(ctx.guild.roles, name=name.title())
+    role = discord.utils.get(ctx.guild.roles, name=name)
 
     ## Checks if role exists
     if not role:
@@ -100,7 +121,7 @@ async def give_role(ctx, member: discord.Member, name):
 @bot_client.command()
 @commands.has_permissions(administrator=True)
 async def take_role(ctx, member: discord.Member, name):
-    role = discord.utils.get(ctx.guild.roles, name=name.title())
+    role = discord.utils.get(ctx.guild.roles, name=name)
 
     ## Checks if role exists
     if not role:
