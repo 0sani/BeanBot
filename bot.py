@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 import json
+import os
 
 from local import discord_token
 
@@ -29,70 +30,31 @@ async def police_mute(ctx, member: discord.Member, reason, muted_role_name):
     await ctx.send(f"{member.name} has been muted.")
 
 
-@bot_client.command()
-async def get_role(ctx, name):
-    role = discord.utils.get(ctx.guild.roles, name=name)
-
-    ## Checks if role exists
-    if not role:
-        await ctx.send(f"{name} is not a role.")
-        return
-
-    ## Checks if role is too high in role hierarchy
-    try:
-        with open("Info/ServerInfo.json", "r") as json_file:
-            ctx.guild.roles.index(role, 0, ctx.guild.roles.index(discord.utils.get(ctx.guild.roles, name=json.load(json_file)["highest_get_role"])))
-    except ValueError:
-        await ctx.send(f"Unable to get role {role.name}, too high in role hierarchy.")
-        return
-
-    await ctx.author.add_roles(role)
-    await ctx.author.send(f"You have been given the {role.name} role in {ctx.guild.name}.")
-    await ctx.send(f"{ctx.author.name} has been given the role {role.name}.")
-
-
-@bot_client.command()
-async def remove_role(ctx, name):
-    role = discord.utils.get(ctx.guild.roles, name=name)
-
-    # Checks if role exists
-    if not role:
-        await ctx.send(f"{name} is not a role.")
-        return
-        
-    await ctx.author.remove_roles(role)
-    await ctx.author.send(f"The role {role.name} has been removed in {ctx.guild.name}.")
-    await ctx.send(f"The role {role.name} has been removed from {ctx.author.name}.")
-
-
+## Loads a cog; increases bot functionality
 @bot_client.command()
 @commands.has_permissions(administrator=True)
-async def give_role(ctx, member: discord.Member, name):
-    role = discord.utils.get(ctx.guild.roles, name=name)
-
-    ## Checks if role exists
-    if not role:
-        await ctx.send(f"{name} is not a role.")
-        return
-
-    await member.add_roles(role)
-    await member.send(f"You have been given the role {role.name} in {ctx.guild.name}.")
-    await ctx.send(f"The role {role.name} has been given to {member.name}.")
+async def enable_cog(ctx, cog_name):
+    if cog_name.endswith("lib.py") or not os.path.isfile(f"./cogs/{cog_name}"):
+        await ctx.send(f"Cog {cog_name} not found.", delete_after=10)
+    else:
+        bot_client.load_extension("cogs." + cog_name)
+        await ctx.send(f"Cog {cog_name} enabled.")
 
 
+## Unloads a cog; decreases bot functionality for current run
 @bot_client.command()
 @commands.has_permissions(administrator=True)
-async def take_role(ctx, member: discord.Member, name):
-    role = discord.utils.get(ctx.guild.roles, name=name)
+async def disable_cog(ctx, cog_name):
+    if cog_name.endswith("lib.py") or not os.path.isfile(f"./cogs/{cog_name}"):
+        await ctx.send(f"Cog {cog_name} not found.", delete_after=10)
+    else:
+        bot_client.unload_extension("cogs." + cog_name)
+        await ctx.send(f"Cog {cog_name} disabled.")
 
-    ## Checks if role exists
-    if not role:
-        await ctx.send(f"{name} is not a role.")
-        return
 
-    await member.remove_roles(role)
-    await member.send(f"The role {role.name} has been taken in {ctx.guild.name}.")
-    await ctx.send(f"The role {role.name} has been taken from {member.name}.")
-
+## Loads all cogs on run
+for file_name in os.listdir("./cogs"):
+    if file_name.endswith(".py") and not file_name.endswith("lib.py"):
+        bot_client.load_extension("cogs." + file_name[:-3])
 
 bot_client.run(discord_token)
