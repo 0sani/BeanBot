@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 import json
+import os
 
 from local import discord_token
 
@@ -94,5 +95,32 @@ async def take_role(ctx, member: discord.Member, name):
     await member.send(f"The role {role.name} has been taken in {ctx.guild.name}.")
     await ctx.send(f"The role {role.name} has been taken from {member.name}.")
 
+
+## Loads a cog; increases bot functionality
+@bot_client.command()
+@commands.has_permissions(administrator=True)
+async def enable_cog(ctx, cog):
+    if os.path.isfile(f"./cogs/{cog}"):
+        bot_client.load_extension("cogs." + cog)
+        await ctx.send(f"Cog {cog} loaded.")
+    else:
+        await ctx.send(f"Cog {cog} not found.")
+
+
+## Unloads a cog; decreases bot functionality for current run
+@bot_client.command()
+@commands.has_permissions(administrator=True)
+async def disable_cog(ctx, cog):
+    if os.path.isfile(f"./cogs/{cog}"):
+        bot_client.unload_extension("cogs." + cog)
+        await ctx.send(f"Cog {cog} unloaded.")
+    else:
+        await ctx.send(f"Cog {cog} not found.")
+
+
+## Loads all cogs on run
+for file_name in os.listdir("./cogs"):
+    if file_name.endswith(".py"):
+        bot_client.load_extension("cogs." + file_name[:-3])
 
 bot_client.run(discord_token)
