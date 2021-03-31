@@ -3,8 +3,7 @@ from discord.ext import commands
 
 import json
 import os
-
-from local import discord_token
+import sys
 
 bot_client = commands.Bot(command_prefix='?')
 
@@ -19,7 +18,7 @@ async def police_mute(ctx, member: discord.Member, reason, muted_role_name):
         return
 
     ## Checks if there are any similar roles between the allowed roles for the muted role and the authors roles
-    with open("Info/ServerInfo.json", "r") as json_file:
+    with open(".info/serverinfo.json", "r") as json_file:
         json_dict = json.load(json_file)
         if not any(i in ctx.author.roles for i in json_dict["police_mutes"][muted_role.name]):
             await ctx.send(f"You do not have permissions to give people the role {muted_role.name}")
@@ -34,7 +33,7 @@ async def police_mute(ctx, member: discord.Member, reason, muted_role_name):
 @bot_client.command()
 @commands.has_permissions(administrator=True)
 async def enable_cog(ctx, cog_name):
-    if cog_name.endswith("lib.py") or not os.path.isfile(f"./cogs/{cog_name}"):
+    if cog_name.endswith("lib.py") or not os.path.isfile(f"./cogs/{cog_name}") or file_name == "__init__.py":
         await ctx.send(f"Cog {cog_name} not found.", delete_after=10)
     else:
         bot_client.load_extension("cogs." + cog_name)
@@ -45,7 +44,7 @@ async def enable_cog(ctx, cog_name):
 @bot_client.command()
 @commands.has_permissions(administrator=True)
 async def disable_cog(ctx, cog_name):
-    if cog_name.endswith("lib.py") or not os.path.isfile(f"./cogs/{cog_name}"):
+    if cog_name.endswith("lib.py") or not os.path.isfile(f"./cogs/{cog_name}") or file_name == "__init__.py":
         await ctx.send(f"Cog {cog_name} not found.", delete_after=10)
     else:
         bot_client.unload_extension("cogs." + cog_name)
@@ -54,7 +53,7 @@ async def disable_cog(ctx, cog_name):
 
 ## Loads all cogs on run
 for file_name in os.listdir("./cogs"):
-    if file_name.endswith(".py") and not file_name.endswith("lib.py"):
+    if file_name.endswith(".py") and not file_name.endswith("lib.py") and not file_name == "__init__.py":
         bot_client.load_extension("cogs." + file_name[:-3])
 
-bot_client.run(discord_token)
+bot_client.run(sys.argv[1])

@@ -3,8 +3,8 @@ from discord.ext import commands
 
 import asyncio
 
-from timelib import Time
-from exceptionslib import TimeError, RoleNotFoundError
+from .timelib import Time
+from .exceptionslib import TimeError, RoleNotFoundError
 
 class Moderation(commands.Cog):
     def __init__(self, bot_client):
@@ -85,7 +85,6 @@ class Moderation(commands.Cog):
         await member.unban()
 
 
-    @commands.Cog.listener()
     async def cog_command_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
             await ctx.send(f"Administration permissions are required to call {ctx.command.name}.", delete_after=10)
