@@ -9,37 +9,6 @@ bot_client = commands.Bot(command_prefix='?')
 
 
 @bot_client.command()
-@commands.has_permissions(administrator=True)
-async def mute(ctx, member: discord.Member, reason="No reason given", muted_role_name="Muted"):
-    muted_role = discord.utils.get(ctx.guild.roles, name=muted_role_name)
-
-    ## Creates muted role if it doesn't exist
-    if not muted_role:
-        muted_role = await ctx.guild.create_role(name="Muted")
-        for channel in ctx.guild.channels:
-            await channel.set_permissions(muted_role, speak=False, send_messages=False, add_reactions=False)
-
-    await member.add_roles(muted_role, reason=reason)
-    await member.send(f"You have been muted in {ctx.guild.name} for {reason}.")
-    await ctx.send(f"{member.name} has been muted.")
-    
-
-@bot_client.command()
-@commands.has_permissions(administrator=True)
-async def unmute(ctx, member: discord.Member, muted_role_name="Muted"):
-    muted_role = discord.utils.get(ctx.guild.roles, name=muted_role_name)
-
-    ## Checks if overloaded muted role inputted wrong
-    if not muted_role:
-        await ctx.send(f"Muted role {muted_role_name} does not exist.")
-        return
-
-    await member.remove_roles(muted_role)
-    await member.send(f"You have been unmuted in {ctx.guild.name}.")
-    await ctx.send(f"{member.name} has been unmuted.")
-
-
-@bot_client.command()
 async def police_mute(ctx, member: discord.Member, reason, muted_role_name):
     muted_role = discord.utils.get(ctx.guild.roles, name=muted_role_name)
 
@@ -58,14 +27,6 @@ async def police_mute(ctx, member: discord.Member, reason, muted_role_name):
     await member.add_roles(muted_role, reason=reason)
     await member.send(f"You have been muted in {ctx.guild.name} for {reason}.")
     await ctx.send(f"{member.name} has been muted.")
-
-
-@bot_client.command()
-@commands.has_permissions(administrator=True)
-async def kick(ctx, member: discord.Member, reason="No reason given"):
-    await member.kick(reason=reason)
-    await member.send(f"You have been kicked from {ctx.guild.name}.")
-    await ctx.send(f"{member.name} has been kicked for {reason}.")
 
 
 @bot_client.command()
@@ -88,6 +49,7 @@ async def get_role(ctx, name):
     await ctx.author.add_roles(role)
     await ctx.author.send(f"You have been given the {role.name} role in {ctx.guild.name}.")
     await ctx.send(f"{ctx.author.name} has been given the role {role.name}.")
+
 
 @bot_client.command()
 async def remove_role(ctx, name):
