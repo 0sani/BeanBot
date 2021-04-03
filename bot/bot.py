@@ -54,4 +54,4 @@ for file_name in os.listdir("./bot/cogs"):
     if file_name.endswith(".py") and not file_name.endswith("lib.py") and not file_name == "__init__.py":
         bot_client.load_extension("cogs." + file_name[:-3])
 
-bot_client.run(os.getenv("bean_bot_token"))
+bot_client.run(os.getenv("BEAN_BOT_TOKEN"))
