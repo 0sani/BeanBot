@@ -3,7 +3,11 @@ from discord.ext import commands
 
 import json, os
 
-bot_client = commands.Bot(command_prefix='?')
+# Allows member events to work
+intents = discord.Intents.default()
+intents.members = True
+
+bot_client = commands.Bot(command_prefix='?', intents=intents)
 
 
 @bot_client.command()

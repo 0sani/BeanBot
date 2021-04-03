@@ -1,0 +1,8 @@
+# Token file
+local.py
+
+# vscode folder
+.vscode
+
+# pycache
+__pycache__
