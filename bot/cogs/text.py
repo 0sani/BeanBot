@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+import asyncio
+
 from .timelib import Time, TimeError
 
 class Text(commands.Cog):
@@ -14,15 +16,23 @@ class Text(commands.Cog):
         await ctx.send(" ".join(args))
 
 
-    ## Dont work idot
+
     @commands.command()
-    async def poll(self, ctx, title, question, option1, option2, time: Time):
-        embed = discord.Embed(title=title, description=question, color=discord.Color.purple)
-        embed.add_field(name="Option 1", value=option1)
-        embed.add_field(name="Option 2", value=option2)
+    async def poll(self, ctx, title, question, time: Time, *options):
 
+        #due to emoji limitations polls will be limited to 10 options
+        if (len(options) > 10):
+            await ctx.send("Too many arguments, 10 is the maximum number of options")
+            return
+
+        embed = discord.Embed(title=title, description=question, color=discord.Color.purple())
+
+        for i in range(len(options)):
+            embed.add_field(name=f"Option {i+1}", value = options[i])
+        
         await ctx.send(embed=embed)
-
+        await asyncio.sleep(time.seconds)
+        await ctx.send("Poll complete")
 
     async def cog_command_error(self, ctx, error):
         if isinstance(error, commands.errors.UnexpectedQuoteError):
