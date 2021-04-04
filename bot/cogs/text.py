@@ -30,8 +30,26 @@ class Text(commands.Cog):
         for i in range(len(options)):
             embed.add_field(name=f"Option {i+1}", value = options[i])
         
-        await ctx.send(embed=embed)
+        message = await ctx.send(embed=embed)
+
+        emojis = [ # I hate this solution, but it works. Would much rather have unicode escape characters but tired of fighting them
+            "1️⃣",
+            "2️⃣",
+            "3️⃣",
+            "4️⃣",
+            "5️⃣",
+            "6️⃣",
+            "7️⃣",
+            "8️⃣",
+            "9️⃣",
+            "🔟"
+        ]
+
+        for i in range(len(options)):
+            await message.add_reaction(emojis[i])
+        
         await asyncio.sleep(time.seconds)
+
         await ctx.send("Poll complete")
 
     async def cog_command_error(self, ctx, error):
