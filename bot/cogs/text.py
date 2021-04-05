@@ -20,9 +20,9 @@ class Text(commands.Cog):
     @commands.command()
     async def poll(self, ctx, title, question, time: Time, *options):
 
-        #due to emoji limitations polls will be limited to 10 options
-        if (len(options) > 10):
-            await ctx.send("Too many arguments, 10 is the maximum number of options")
+        #due to emoji limitations polls will be limited to 9 options
+        if (len(options) > 9):
+            await ctx.send("Too many arguments, 9 is the maximum number of options")
             return
 
         embed = discord.Embed(title=title, description=question, color=discord.Color.purple())
@@ -33,7 +33,7 @@ class Text(commands.Cog):
         message = await ctx.send(embed=embed)
 
         for i in range(len(options)):
-            await message.add_reaction(f"{i+1}\uFE0F\u20E3" if i < 9 else "\U0001F51F")
+            await message.add_reaction(f"{i+1}\uFE0F\u20E3")
         
         await asyncio.sleep(time.seconds)
 
@@ -43,7 +43,7 @@ class Text(commands.Cog):
         
         reactions.sort(key=lambda x: x.count, reverse=True)
 
-        index = 9 if reactions[0].emoji[0] == "\U0001F51F" else int(reactions[0].emoji[0])-1
+        index = int(reactions[0].emoji[0])-1
 
         result = discord.Embed(title=title, description=question, color=discord.Color.purple())
         result.add_field(name="Winner", value = options[index])
