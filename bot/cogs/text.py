@@ -16,17 +16,12 @@ class Text(commands.Cog):
         await ctx.send(" ".join(args))
 
 
-
     @commands.command()
     async def poll(self, ctx, title, question, time: Time, *options):
-
         if len(options) > 9:
             await ctx.send("Only 9 options allowed.")
             return
 
-        embed = discord.Embed(title=title, description=question, color=discord.Color.purple())
-        for i in range(len(options)):
-        
         embed = discord.Embed(title=title, description=question, color=discord.Color.purple())
         for i in range(len(options)):
             embed.add_field(name=f"Option {i + 1}", value=options[i])
