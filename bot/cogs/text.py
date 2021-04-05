@@ -19,49 +19,26 @@ class Text(commands.Cog):
 
     @commands.command()
     async def poll(self, ctx, title, question, time: Time, *options):
-
-        #due to emoji limitations polls will be limited to 10 options
-        if (len(options) > 10):
-            await ctx.send("Too many arguments, 10 is the maximum number of options")
+        if len(options) > 9:
+            await ctx.send("Only 9 options allowed.")
             return
 
         embed = discord.Embed(title=title, description=question, color=discord.Color.purple())
-
         for i in range(len(options)):
-            embed.add_field(name=f"Option {i+1}", value = options[i])
-        
+            embed.add_field(name=f"Option {i + 1}", value=options[i])
+
         message = await ctx.send(embed=embed)
-
-        emojis = [ # I hate this solution, but it works. Would much rather have unicode escape characters but tired of fighting them
-            "1️⃣",
-            "2️⃣",
-            "3️⃣",
-            "4️⃣",
-            "5️⃣",
-            "6️⃣",
-            "7️⃣",
-            "8️⃣",
-            "9️⃣",
-            "🔟"
-        ]
-
         for i in range(len(options)):
-            await message.add_reaction(emojis[i])
+            await message.add_reaction(f"{i + 1}\uFE0F\u20E3")
         
         await asyncio.sleep(time.seconds)
 
-        message = await ctx.fetch_message(message.id) # If I don't fetch the message again it won't get the emojis
-
-        reactions = [reaction for reaction in message.reactions if reaction.me]
-        
-        reactions.sort(key=lambda x: x.count, reverse=True)
-
-        index = emojis.index(reactions[0].emoji)
-
+        # If I don't fetch the message again it won't get the emojis
         result = discord.Embed(title=title, description=question, color=discord.Color.purple())
-        result.add_field(name="Winner", value = options[index])
+        result.add_field(name="Winner", value=options[int([reaction for reaction in await ctx.fetch_message(message.id).reactions if reaction.me].sort(key=lambda x: x.count, reverse=True)[0].emojis[0]) - 1])
         
         await ctx.send(embed=result)
+
 
     async def cog_command_error(self, ctx, error):
         if isinstance(error, commands.errors.UnexpectedQuoteError):
