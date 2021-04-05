@@ -33,16 +33,16 @@ class Text(commands.Cog):
         message = await ctx.send(embed=embed)
 
         emojis = [ # I hate this solution, but it works. Would much rather have unicode escape characters but tired of fighting them
-            "1️⃣",
-            "2️⃣",
-            "3️⃣",
-            "4️⃣",
-            "5️⃣",
-            "6️⃣",
-            "7️⃣",
-            "8️⃣",
-            "9️⃣",
-            "🔟"
+            "1\uFE0F\u20E3",
+            "2\uFE0F\u20E3",
+            "3\uFE0F\u20E3",
+            "4\uFE0F\u20E3",
+            "5\uFE0F\u20E3",
+            "6\uFE0F\u20E3",
+            "7\uFE0F\u20E3",
+            "8\uFE0F\u20E3",
+            "9\uFE0F\u20E3",
+            "\U0001F51F"
         ]
 
         for i in range(len(options)):
