@@ -10,10 +10,10 @@ class Text(commands.Cog):
         self.bot_client = bot_client
 
 
-    @commands.command()
-    async def echo(self, ctx, *args):
+    @commands.command(rest_is_raw=True)
+    async def echo(self, ctx, *, arg):
         await ctx.message.delete()
-        await ctx.send(" ".join(args))
+        await ctx.send(arg)
 
 
     @commands.command()
