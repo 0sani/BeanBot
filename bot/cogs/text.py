@@ -20,35 +20,32 @@ class Text(commands.Cog):
     @commands.command()
     async def poll(self, ctx, title, question, time: Time, *options):
 
-        #due to emoji limitations polls will be limited to 9 options
-        if (len(options) > 9):
-            await ctx.send("Too many arguments, 9 is the maximum number of options")
+        if len(options) > 9:
+            await ctx.send("Only 9 options allowed.")
             return
 
         embed = discord.Embed(title=title, description=question, color=discord.Color.purple())
-
         for i in range(len(options)):
-            embed.add_field(name=f"Option {i+1}", value = options[i])
         
+        embed = discord.Embed(title=title, description=question, color=discord.Color.purple())
+        for i in range(len(options)):
+            embed.add_field(name=f"Option {i + 1}", value=options[i])
         message = await ctx.send(embed=embed)
 
         for i in range(len(options)):
-            await message.add_reaction(f"{i+1}\uFE0F\u20E3")
+            await message.add_reaction(f"{i + 1}\uFE0F\u20E3")
         
         await asyncio.sleep(time.seconds)
 
         message = await ctx.fetch_message(message.id) # If I don't fetch the message again it won't get the emojis
-
         reactions = [reaction for reaction in message.reactions if reaction.me]
-        
         reactions.sort(key=lambda x: x.count, reverse=True)
-
         index = int(reactions[0].emoji[0])-1
 
         result = discord.Embed(title=title, description=question, color=discord.Color.purple())
-        result.add_field(name="Winner", value = options[index])
-        
+        result.add_field(name="Winner", value=options[index])
         await ctx.send(embed=result)
+
 
     async def cog_command_error(self, ctx, error):
         if isinstance(error, commands.errors.UnexpectedQuoteError):
