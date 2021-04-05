@@ -50,7 +50,18 @@ class Text(commands.Cog):
         
         await asyncio.sleep(time.seconds)
 
-        await ctx.send("Poll complete")
+        message = await ctx.fetch_message(message.id) # If I don't fetch the message again it won't get the emojis
+
+        reactions = [reaction for reaction in message.reactions if reaction.me]
+        
+        reactions.sort(key=lambda x: x.count, reverse=True)
+
+        index = emojis.index(reactions[0].emoji)
+
+        result = discord.Embed(title=title, description=question, color=discord.Color.purple())
+        result.add_field(name="Winner", value = options[index])
+        
+        await ctx.send(embed=result)
 
     async def cog_command_error(self, ctx, error):
         if isinstance(error, commands.errors.UnexpectedQuoteError):
