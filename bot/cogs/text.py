@@ -30,9 +30,38 @@ class Text(commands.Cog):
         for i in range(len(options)):
             embed.add_field(name=f"Option {i+1}", value = options[i])
         
-        await ctx.send(embed=embed)
+        message = await ctx.send(embed=embed)
+
+        emojis = [ # I hate this solution, but it works. Would much rather have unicode escape characters but tired of fighting them
+            "1\uFE0F\u20E3",
+            "2\uFE0F\u20E3",
+            "3\uFE0F\u20E3",
+            "4\uFE0F\u20E3",
+            "5\uFE0F\u20E3",
+            "6\uFE0F\u20E3",
+            "7\uFE0F\u20E3",
+            "8\uFE0F\u20E3",
+            "9\uFE0F\u20E3",
+            "\U0001F51F"
+        ]
+
+        for i in range(len(options)):
+            await message.add_reaction(emojis[i])
+        
         await asyncio.sleep(time.seconds)
-        await ctx.send("Poll complete")
+
+        message = await ctx.fetch_message(message.id) # If I don't fetch the message again it won't get the emojis
+
+        reactions = [reaction for reaction in message.reactions if reaction.me]
+        
+        reactions.sort(key=lambda x: x.count, reverse=True)
+
+        index = emojis.index(reactions[0].emoji)
+
+        result = discord.Embed(title=title, description=question, color=discord.Color.purple())
+        result.add_field(name="Winner", value = options[index])
+        
+        await ctx.send(embed=result)
 
     async def cog_command_error(self, ctx, error):
         if isinstance(error, commands.errors.UnexpectedQuoteError):
