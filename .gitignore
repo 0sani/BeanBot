@@ -1,8 +1,5 @@
-# Token file
-local.py
+## VSCode Config Folder
+.vscode/
 
-# vscode folder
-.vscode
-
-# pycache
-__pycache__
+## Python Byte Code Folder
+__pycache__/
