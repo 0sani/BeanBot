@@ -55,7 +55,7 @@ async def disable_cog(ctx, cog_name):
 
 ## Loads all cogs on run
 for file_name in os.listdir("./bot/cogs"):
-    if file_name.endswith(".py") and not file_name.endswith("lib.py") and not file_name == "__init__.py":
+    if file_name.endswith(".py") and not file_name.endswith("lib.py") and file_name != "__init__.py":
         bot_client.load_extension("cogs." + file_name[:-3])
 
 bot_client.run(os.getenv("BEAN_BOT_TOKEN"))

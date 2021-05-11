@@ -12,11 +12,11 @@ class Roles(commands.Cog):
     async def get_role(self, ctx, name):
         role = discord.utils.get(ctx.guild.roles, name=name)
     
-        if not role:
+        if role is None:
             raise RoleNotFoundError(f"Role {name} not found.")
     
         ## Checks if role is too high in role hierarchy
-        if ctx.guild.roles.index(role) >= discord.utils.get(ctx.guild.roles, name="Server Booster"):
+        if ctx.guild.roles.index(role) >= ctx.guild.roles.index(discord.utils.get(ctx.guild.roles, name="Server Booster")):
             raise RoleTooHighInHierarchyError(role)
     
         await ctx.author.add_roles(role)
