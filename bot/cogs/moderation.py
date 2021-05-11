@@ -4,7 +4,6 @@ from discord.ext import commands
 import asyncio
 
 from .timelib import Time, TimeError
-from .exceptionslib import RoleNotFoundError
 
 class Moderation(commands.Cog):
     def __init__(self, bot_client):
@@ -51,7 +50,8 @@ class Moderation(commands.Cog):
     
         ## Checks if overloaded muted role inputted wrong
         if not muted_role:
-            raise RoleNotFoundError(f"Muted role {muted_role_name} not found.")
+            await ctx.send(f"Muted role {muted_role_name} not found.")
+            return
     
         await member.remove_roles(muted_role)
         await member.send(f"You have been unmuted in {ctx.guild.name}.")
@@ -92,8 +92,6 @@ class Moderation(commands.Cog):
             await ctx.send(f"Missing required arguments for command {ctx.command.name}.", delete_after=10) 
         if isinstance(error, TimeError):
             await ctx.send(f"Time input formatted incorrectly.", delete_after=10)
-        if isinstance(error, RoleNotFoundError):
-            await ctx.send(error.message)
 
 
 def setup(bot_client):
