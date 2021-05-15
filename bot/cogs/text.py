@@ -12,6 +12,9 @@ class Text(commands.Cog):
 
     @commands.command(rest_is_raw=True)
     async def echo(self, ctx, *, arg):
+        if "@here" in arg or "@everyone" in arg:
+            return
+
         await ctx.message.delete()
         await ctx.send(arg)
 
