@@ -37,7 +37,7 @@ class Roles(commands.Cog):
         await ctx.send(f"The role {role.name} has been removed from {ctx.author.name}.")
 
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.has_permissions(administrator=True)
     async def give_role(self, ctx, member: discord.Member, name):
         role = discord.utils.get(ctx.guild.roles, name=name)
@@ -51,7 +51,7 @@ class Roles(commands.Cog):
         await ctx.send(f"The role {role.name} has been given to {member.name}.")
 
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.has_permissions(administrator=True)
     async def take_role(self, ctx, member: discord.Member, name):
         role = discord.utils.get(ctx.guild.roles, name=name)
