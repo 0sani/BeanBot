@@ -1,4 +1,4 @@
-# BeanBot
+# BeanBot (The better one)
 A new general-purpose, local-hosted bot for use in a Discord server. 
 Made for the BeanChat server (the greatest server of all time).
 
